@@ -13,6 +13,7 @@ const MUTANTS = [
   ['年付不折算成月', "it.amountCents / 12", 'it.amountCents'],
   ['7 天窗口差一天', 'row.date < end', 'row.date <= end'],
   ['一次性水果买了还出现', 'if (it.everyDays === null) return null;', 'if (it.everyDays === null) return today;'],
+  ['没东西要买也发消息', 'if (rows.length === 0) return null;', ''],
   ['过期的分享也算', "it.date >= today ? it.date : null", 'it.date'],
 ];
 

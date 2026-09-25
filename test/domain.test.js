@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { emptyState, apply, summary, agenda, addMonths, nextRenewal, todayISO } from '../app/domain.js';
+import { emptyState, apply, summary, agenda, addMonths, nextRenewal, todayISO, shoppingMessage } from '../app/domain.js';
 
 const TODAY = '2026-09-25';
 
@@ -74,6 +74,12 @@ test('删除条目后它从日程和总额里消失', () => {
   const s = apply(load(family()), { type: 'remove', id: 's1' });
   assert.equal(summary(s, TODAY).monthlyCents, 8833 - 2500);
   assert.ok(!agenda(s, TODAY).some(r => r.id === 's1'));
+});
+
+test('P7 发到家庭群的采购消息列出 7 天内要买的东西，买过的不在里面', () => {
+  const s = apply(load(family()), { type: 'bought', id: 'p1', on: TODAY });
+  assert.equal(shoppingMessage(s, TODAY), '【我去买】9/25\n· 草莓 ×1\n· 香蕉 ×1');
+  assert.equal(shoppingMessage(emptyState(), TODAY), null);
 });
 
 test('P6 北京时间早上 7 点，今天是本地日期而不是 UTC 的前一天', () => {

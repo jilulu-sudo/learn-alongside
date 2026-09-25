@@ -1,5 +1,5 @@
 // 浏览器这一层：读写 localStorage、解析表单、渲染。所有输入校验都放在这里，domain.js 只收合法数据。
-import { emptyState, apply, agenda, summary, todayISO, addDays, nextRenewal, yuan } from './domain.js';
+import { emptyState, apply, agenda, summary, todayISO, addDays, nextRenewal, yuan, shoppingMessage } from './domain.js';
 
 const KEY = 'family-agenda:v1';
 const $ = sel => document.querySelector(sel);
@@ -66,6 +66,8 @@ function render() {
     ),
   );
   $('[data-testid=empty]').hidden = state.items.length > 0;
+  $('[data-testid=share]').hidden = shoppingMessage(state, today) === null;
+  $('[data-testid=share]').textContent = '我去买，复制到家庭群';
 
   $('[data-testid=all-items]').replaceChildren(
     ...state.items.map(it => {
@@ -110,6 +112,21 @@ document.querySelectorAll('form[data-kind]').forEach(form => {
     }
   });
 });
+
+// 手机通过局域网 http 打开时不是安全上下文，没有 navigator.clipboard，这时把文字摆出来让人长按复制。
+$('[data-testid=share]').onclick = async () => {
+  const text = shoppingMessage(state, todayISO());
+  const box = $('[data-testid=share-text]');
+  try {
+    await navigator.clipboard.writeText(text);
+    $('[data-testid=share]').textContent = '已复制，去微信群粘贴';
+    box.hidden = true;
+  } catch {
+    box.value = text;
+    box.hidden = false;
+    box.select();
+  }
+};
 
 $('[data-testid=seed]').onclick = () => {
   const t = todayISO();

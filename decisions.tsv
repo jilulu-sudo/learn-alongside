@@ -15,3 +15,7 @@ ts	phase	decision	why	evidence	result
 2026-09-25T15:01:36Z	verify	故意往 todayISO 植入 UTC bug：端到端抓到了，单元测试 P6 却没抓到	单元测试用的是手写假对象，而今天的真实日期刚好就是 2026-09-25，等于期望值，所以是巧合通过	test/domain.test.js P6	单元测试被纠正
 2026-09-25T15:01:36Z	verify	P6 改用真实 Date + TZ=Asia/Shanghai + 远离今天的 2031-03-01，并把植入 bug 做成可重跑的 scripts/mutation-check.mjs	‘测试可能巧合通过’这个教训写成脚本比写成提醒可靠；它在临时副本里改代码，中途被打断也不会把 bug 留在 app/ 里	scripts/mutation-check.mjs	7 个植入 bug 全部被抓住
 2026-09-25T15:01:36Z	goal	scripts/verify.sh 串起三步：行为测试、变异检查、端到端，最后打印 VERIFIED	完成条件只有一个裁判，谁跑都是同一个结论	npm run verify	VERIFIED
+2026-09-25T15:02:55Z	correct	【演练，反馈是剧本设定的】家人反馈苹果买重了，希望加认领按钮；先不做按钮，先复现	fix-root-causes 要求先复现；认领按钮这个方案隐含一个前提：两台手机看到的是同一份清单	prototype/two-phones.mjs	open
+2026-09-25T15:02:55Z	correct	前提被证伪：两台手机各有一份 localStorage，爸爸点了买了，妈妈那边苹果还在	attack-the-premise：认领按钮也会存进同一个只有本机看得到的地方，照样防不了买重，根因是家里没有共享数据	prototype/two-phones.mjs 的输出	认领按钮方案否掉
+2026-09-25T15:02:55Z	correct	要不要做云同步（账号、后端）留给你决定，现在先用家里已经共享的微信群：一键生成‘我去买’消息	never-block-on-the-human：产品方向归人，可撤销的小改动先做；laziness：微信群本来就显示是谁发的，不用在 app 里加‘我是谁’	app/domain.js shoppingMessage, docs/04-路径纠正.md	open decision 已记录
+2026-09-25T15:02:55Z	correct	剪贴板不可用时退回到显示文字、全选，让人手动复制	手机用局域网 http 地址打开时不是安全上下文，navigator.clipboard 不存在；这个页面就是给家里手机用的，这种情况一定会遇到	test-e2e/run.mjs P7, docs/images/app-share-fallback.png	VERIFIED

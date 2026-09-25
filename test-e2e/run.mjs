@@ -16,7 +16,7 @@ const check = async (name, fn) => {
 };
 
 try {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, timezoneId: 'Asia/Shanghai', locale: 'zh-CN' });
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, timezoneId: 'Asia/Shanghai', locale: 'zh-CN', permissions: ['clipboard-read', 'clipboard-write'] });
   const page = await context.newPage();
   const text = id => page.getByTestId(id).innerText();
   const agendaRows = async () => (await page.getByTestId('agenda').locator('li').allInnerTexts()).map(t => t.replace(/\s+/g, ' ').trim());
@@ -82,6 +82,25 @@ try {
     assert.equal(await text('next-activity'), '明天 番茄工作法');
     assert.ok(!(await agendaRows()).some(r => r.includes('苹果')));
   });
+  await check('P7 点“我去买”把采购清单复制到剪贴板，好发到家庭群', async () => {
+    await page.getByTestId('share').click();
+    assert.equal(await page.evaluate(() => navigator.clipboard.readText()), '【我去买】9/25\n· 草莓 ×1\n· 香蕉 ×1');
+    assert.equal(await text('share'), '已复制，去微信群粘贴');
+  });
+
+  await check('P7 局域网 http 打开没有剪贴板时，改为显示文字让人手动复制', async () => {
+    const lan = await browser.newContext({ viewport: { width: 390, height: 844 }, timezoneId: 'Asia/Shanghai' });
+    await lan.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { value: undefined }));
+    const p2 = await lan.newPage();
+    await p2.clock.setFixedTime(new Date('2026-09-25T07:00:00+08:00'));
+    await p2.goto(url);
+    await p2.getByTestId('seed').click();
+    await p2.getByTestId('share').click();
+    assert.equal(await p2.getByTestId('share-text').inputValue(), '【我去买】9/25\n· 苹果 ×6\n· 草莓 ×1\n· 香蕉 ×1');
+    await p2.screenshot({ path: `${shots}app-share-fallback.png` });
+    await lan.close();
+  });
+
   await page.getByTestId('all').locator('summary').click();
   await page.screenshot({ path: `${shots}app-after.png`, fullPage: true });
 } finally {

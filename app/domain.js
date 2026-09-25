@@ -65,6 +65,13 @@ export function summary(state, today) {
   };
 }
 
+// 家里共享的是微信群，不是这份数据。发一条消息占住“我去买”，比在各自手机上点认领更能防止买重。
+export function shoppingMessage(state, today) {
+  const rows = agenda(state, today).filter(row => row.kind === 'purchase');
+  if (rows.length === 0) return null;
+  return [`【我去买】${Number(today.slice(5, 7))}/${Number(today.slice(8))}`, ...rows.map(r => `· ${r.text}`)].join('\n');
+}
+
 export function nextRenewal(sub, today) {
   const step = sub.cycle === 'monthly' ? 1 : 12;
   const [sy, sm] = sub.start.split('-').map(Number);

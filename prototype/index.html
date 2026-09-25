@@ -1,0 +1,80 @@
+<!doctype html>
+<!-- 一次性原型。只为回答一个问题：哪种布局能在手机首屏同时回答三件事。代码质量不重要，决定做完就可以删。 -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>布局原型</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; background: #f6f6f4; color: #222; }
+  .switcher { position: sticky; top: 0; display: flex; gap: 4px; padding: 6px; background: #222; z-index: 9; }
+  .switcher button { flex: 1; padding: 8px 4px; border: 0; border-radius: 6px; background: #444; color: #fff; font-size: 13px; }
+  .switcher button.on { background: #e8b400; color: #000; }
+  .variant { display: none; padding: 12px; }
+  .variant.on { display: block; }
+  h2 { font-size: 15px; margin: 14px 0 6px; }
+  .row { background: #fff; border-radius: 8px; padding: 10px 12px; margin: 6px 0; display: flex; justify-content: space-between; font-size: 14px; }
+  .tag { font-size: 11px; background: #eee; padding: 2px 6px; border-radius: 4px; margin-right: 6px; }
+  .tabs { display: flex; gap: 4px; }
+  .tabs span { flex: 1; text-align: center; padding: 8px; background: #ddd; border-radius: 6px; font-size: 14px; }
+  .tabs span.on { background: #fff; font-weight: 600; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .card { background: #fff; border-radius: 8px; padding: 8px; font-size: 12px; }
+  .card b { display: block; font-size: 16px; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="switcher">
+  <button data-v="a">A 单一清单</button>
+  <button data-v="b">B 三个 Tab</button>
+  <button data-v="c">C 汇总卡片 + 7 天日程</button>
+</div>
+
+<section class="variant" id="a">
+  <h2>全部待办</h2>
+  <div class="row"><span><span class="tag">订阅</span>爱奇艺 VIP 续费 ¥25/月</span><span>9/28</span></div>
+  <div class="row"><span><span class="tag">订阅</span>iCloud+ 200GB ¥21/月</span><span>10/3</span></div>
+  <div class="row"><span><span class="tag">订阅</span>网易云音乐 ¥148/年</span><span>11/12</span></div>
+  <div class="row"><span><span class="tag">订阅</span>腾讯视频 ¥30/月</span><span>10/15</span></div>
+  <div class="row" data-answer="activity"><span><span class="tag">学习</span>AI 记账分享（爸爸）</span><span>9/27</span></div>
+  <div class="row"><span><span class="tag">学习</span>太阳系（小宇）</span><span>10/4</span></div>
+  <div class="row"><span><span class="tag">水果</span>苹果 ×6</span><span>每周</span></div>
+  <div class="row"><span><span class="tag">水果</span>香蕉 ×1 把</span><span>每 5 天</span></div>
+  <div class="row" data-answer="fruit"><span><span class="tag">水果</span>草莓 1 盒</span><span>一次</span></div>
+</section>
+
+<section class="variant" id="b">
+  <div class="tabs"><span class="on">订阅</span><span>水果</span><span>学习</span></div>
+  <h2>订阅</h2>
+  <div class="row"><span>爱奇艺 VIP</span><span>¥25/月</span></div>
+  <div class="row"><span>iCloud+ 200GB</span><span>¥21/月</span></div>
+  <div class="row"><span>网易云音乐</span><span>¥148/年</span></div>
+  <div class="row"><span>腾讯视频</span><span>¥30/月</span></div>
+  <div class="row" data-answer="total"><span>每月合计</span><span>¥88.33</span></div>
+</section>
+
+<section class="variant" id="c">
+  <div class="cards">
+    <div class="card" data-answer="total">订阅每月<b>¥88.33</b></div>
+    <div class="card" data-answer="fruit">本周要买<b>3 样</b></div>
+    <div class="card" data-answer="activity">下次分享<b>9/27 周六</b></div>
+  </div>
+  <h2>接下来 7 天</h2>
+  <div class="row"><span><span class="tag">水果</span>苹果 ×6、香蕉、草莓</span><span>今天</span></div>
+  <div class="row"><span><span class="tag">学习</span>AI 记账分享（爸爸）</span><span>9/27</span></div>
+  <div class="row"><span><span class="tag">订阅</span>爱奇艺 VIP 扣 ¥25</span><span>9/28</span></div>
+  <div class="row"><span><span class="tag">订阅</span>iCloud+ 扣 ¥21</span><span>10/3</span></div>
+</section>
+
+<script>
+  const show = v => {
+    document.querySelectorAll('.variant').forEach(s => s.classList.toggle('on', s.id === v));
+    document.querySelectorAll('.switcher button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+    location.hash = v;
+  };
+  document.querySelectorAll('.switcher button').forEach(b => b.onclick = () => show(b.dataset.v));
+  addEventListener('keydown', e => ({ '1': 'a', '2': 'b', '3': 'c' }[e.key] && show({ '1': 'a', '2': 'b', '3': 'c' }[e.key])));
+  show(location.hash.slice(1) || 'a');
+</script>
+</body>
+</html>

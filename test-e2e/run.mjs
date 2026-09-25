@@ -2,6 +2,7 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
+import { networkInterfaces } from 'node:os';
 import { serve } from '../scripts/serve.mjs';
 
 const shots = fileURLToPath(new URL('../docs/images/', import.meta.url));
@@ -88,15 +89,23 @@ try {
     assert.equal(await text('share'), '已复制，去微信群粘贴');
   });
 
-  await check('P7 局域网 http 打开没有剪贴板时，改为显示文字让人手动复制', async () => {
+  await check('P7 用局域网 http 地址打开（非安全上下文）时，添加条目和发到家庭群都能用', async () => {
+    const ip = Object.values(networkInterfaces()).flat().find(i => i.family === 'IPv4' && !i.internal)?.address;
+    assert.ok(ip, '这台机器没有局域网 IPv4 地址，无法模拟手机通过 Wi-Fi 访问');
     const lan = await browser.newContext({ viewport: { width: 390, height: 844 }, timezoneId: 'Asia/Shanghai' });
-    await lan.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { value: undefined }));
     const p2 = await lan.newPage();
+    const errors = [];
+    p2.on('pageerror', e => errors.push(e.message));
     await p2.clock.setFixedTime(new Date('2026-09-25T07:00:00+08:00'));
-    await p2.goto(url);
-    await p2.getByTestId('seed').click();
+    await p2.goto(`http://${ip}:${server.address().port}/`);
+    assert.equal(await p2.evaluate(() => window.isSecureContext), false);
+    await p2.getByText('水果和日常采购').click();
+    await p2.locator('form[data-kind=purchase]').getByLabel('名称').fill('橙子');
+    await p2.locator('form[data-kind=purchase]').getByRole('button').click();
+    assert.deepEqual(errors, []);
+    assert.equal(await p2.getByTestId('error').innerText(), '');
     await p2.getByTestId('share').click();
-    assert.equal(await p2.getByTestId('share-text').inputValue(), '【我去买】9/25\n· 苹果 ×6\n· 草莓 ×1\n· 香蕉 ×1');
+    assert.equal(await p2.getByTestId('share-text').inputValue(), '【我去买】9/25\n· 橙子 ×1');
     await p2.screenshot({ path: `${shots}app-share-fallback.png` });
     await lan.close();
   });

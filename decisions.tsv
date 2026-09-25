@@ -19,3 +19,5 @@ ts	phase	decision	why	evidence	result
 2026-09-25T15:02:55Z	correct	前提被证伪：两台手机各有一份 localStorage，爸爸点了买了，妈妈那边苹果还在	attack-the-premise：认领按钮也会存进同一个只有本机看得到的地方，照样防不了买重，根因是家里没有共享数据	prototype/two-phones.mjs 的输出	认领按钮方案否掉
 2026-09-25T15:02:55Z	correct	要不要做云同步（账号、后端）留给你决定，现在先用家里已经共享的微信群：一键生成‘我去买’消息	never-block-on-the-human：产品方向归人，可撤销的小改动先做；laziness：微信群本来就显示是谁发的，不用在 app 里加‘我是谁’	app/domain.js shoppingMessage, docs/04-路径纠正.md	open decision 已记录
 2026-09-25T15:02:55Z	correct	剪贴板不可用时退回到显示文字、全选，让人手动复制	手机用局域网 http 地址打开时不是安全上下文，navigator.clipboard 不存在；这个页面就是给家里手机用的，这种情况一定会遇到	test-e2e/run.mjs P7, docs/images/app-share-fallback.png	VERIFIED
+2026-09-25T15:10:05Z	verify	重读代码时发现：crypto.randomUUID 也只在安全上下文里有，手机用局域网 http 打开时每次添加都会失败	P7 的局域网测试只是在 localhost 上删掉了剪贴板，是个代理；改用本机真实网卡地址复现，页面报 crypto.randomUUID is not a function	test-e2e/run.mjs P7 局域网, isSecureContext=false	复现成功，之前 9 条端到端全绿却没发现
+2026-09-25T15:10:05Z	verify	加 newId() 在没有 randomUUID 时退回时间戳加随机数；局域网测试改走真实非安全地址，并断言错误提示为空	错误被表单的 try/catch 接住显示在页面上，不会变成 pageerror，只查 pageerror 抓不到	app/app.js newId	VERIFIED

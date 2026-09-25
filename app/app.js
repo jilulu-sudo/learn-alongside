@@ -7,6 +7,9 @@ const LABEL = { subscription: '订阅', purchase: '水果', activity: '学习' }
 
 let state = load();
 
+// crypto.randomUUID 和剪贴板一样只在安全上下文里有；家里手机用局域网 http 打开时没有它。
+const newId = () => crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+
 function load() {
   try {
     const parsed = JSON.parse(localStorage.getItem(KEY));
@@ -104,7 +107,7 @@ document.querySelectorAll('form[data-kind]').forEach(form => {
     const kind = form.dataset.kind;
     try {
       const fields = PARSE[kind](Object.fromEntries(new FormData(form)));
-      dispatch({ type: 'add', item: { id: crypto.randomUUID(), kind, ...fields } });
+      dispatch({ type: 'add', item: { id: newId(), kind, ...fields } });
       form.reset();
       $('[data-testid=error]').textContent = '';
     } catch (err) {
@@ -140,7 +143,7 @@ $('[data-testid=seed]').onclick = () => {
     { kind: 'purchase', name: '草莓', qty: 1, everyDays: null, lastBought: null },
     { kind: 'activity', topic: '用 AI 记账', host: '爸爸', date: addDays(t, 2) },
     { kind: 'activity', topic: '太阳系', host: '小宇', date: addDays(t, 9) },
-  ].forEach(item => dispatch({ type: 'add', item: { id: crypto.randomUUID(), ...item } }));
+  ].forEach(item => dispatch({ type: 'add', item: { id: newId(), ...item } }));
 };
 
 render();

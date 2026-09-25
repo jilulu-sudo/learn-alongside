@@ -13,7 +13,7 @@ const newId = () => crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.
 function load() {
   try {
     const parsed = JSON.parse(localStorage.getItem(KEY));
-    return Array.isArray(parsed?.items) ? parsed : emptyState();
+    return Array.isArray(parsed?.items) ? { items: parsed.items.filter(it => Object.hasOwn(LABEL, it?.kind)) } : emptyState();
   } catch {
     return emptyState();
   }
@@ -30,7 +30,7 @@ function dispatch(action) {
 }
 
 function when(date, today) {
-  if (date < today) return '已过期';
+  if (date < today) return '已到期';
   if (date === today) return '今天';
   if (date === addDays(today, 1)) return '明天';
   return `${Number(date.slice(5, 7))}/${Number(date.slice(8))} 周${'日一二三四五六'[new Date(`${date}T00:00:00Z`).getUTCDay()]}`;

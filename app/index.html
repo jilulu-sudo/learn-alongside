@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>家庭事务板</title>
+<style>
+  :root { --bg: #f6f6f4; --card: #fff; --ink: #222; --muted: #777; --accent: #e8b400; --line: #e5e5e0; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #161616; --card: #232323; --ink: #eee; --muted: #999; --line: #333; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  main { max-width: 560px; margin: 0 auto; padding: 12px 16px 48px; }
+  h1 { font-size: 18px; margin: 4px 0 12px; }
+  h2 { font-size: 15px; margin: 18px 0 6px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .card { background: var(--card); border-radius: 10px; padding: 10px; font-size: 12px; color: var(--muted); }
+  .card b { display: block; margin-top: 4px; font-size: 16px; color: var(--ink); }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { background: var(--card); border-radius: 8px; padding: 10px 12px; margin: 6px 0; display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  li .text { flex: 1; }
+  li .when { color: var(--muted); font-size: 13px; }
+  .tag { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: var(--line); }
+  button { font: inherit; font-size: 13px; border: 0; border-radius: 6px; padding: 6px 10px; background: var(--accent); color: #000; cursor: pointer; }
+  button.ghost { background: transparent; color: var(--muted); padding: 6px; }
+  details { background: var(--card); border-radius: 8px; margin: 8px 0; padding: 8px 12px; }
+  summary { cursor: pointer; font-size: 14px; }
+  form { display: grid; gap: 8px; margin: 10px 0 4px; }
+  label { display: grid; gap: 2px; font-size: 12px; color: var(--muted); }
+  input, select { font: inherit; font-size: 15px; padding: 7px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
+  .empty { color: var(--muted); font-size: 14px; }
+  .error { color: #c33; font-size: 13px; min-height: 1em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>家庭事务板</h1>
+
+  <section class="cards">
+    <div class="card">订阅每月<b data-testid="monthly">¥0.00</b></div>
+    <div class="card">7 天内要买<b data-testid="fruit-due">0 样</b></div>
+    <div class="card">下次分享<b data-testid="next-activity">暂无</b></div>
+  </section>
+
+  <h2>接下来 7 天</h2>
+  <ul data-testid="agenda"></ul>
+  <p class="empty" data-testid="empty" hidden>
+    还没有任何条目。<button data-testid="seed">载入示例数据</button>
+  </p>
+
+  <h2>添加</h2>
+  <details>
+    <summary>订阅（会员、网盘、App）</summary>
+    <form data-kind="subscription">
+      <label>名称<input name="name" required placeholder="爱奇艺 VIP"></label>
+      <label>每次扣费（元）<input name="amount" required inputmode="decimal" placeholder="25"></label>
+      <label>周期<select name="cycle"><option value="monthly">每月</option><option value="yearly">每年</option></select></label>
+      <label>开通日期<input name="start" type="date" required></label>
+      <button>添加订阅</button>
+    </form>
+  </details>
+  <details>
+    <summary>水果和日常采购</summary>
+    <form data-kind="purchase">
+      <label>名称<input name="name" required placeholder="苹果"></label>
+      <label>数量<input name="qty" inputmode="numeric" value="1"></label>
+      <label>每几天买一次（留空表示只买一次）<input name="everyDays" inputmode="numeric" placeholder="7"></label>
+      <button>添加采购</button>
+    </form>
+  </details>
+  <details>
+    <summary>学习分享</summary>
+    <form data-kind="activity">
+      <label>主题<input name="topic" required placeholder="用 AI 记账"></label>
+      <label>主讲人<input name="host" required placeholder="爸爸"></label>
+      <label>日期<input name="date" type="date" required></label>
+      <button>添加分享</button>
+    </form>
+  </details>
+  <p class="error" data-testid="error"></p>
+
+  <details data-testid="all">
+    <summary>全部条目</summary>
+    <ul data-testid="all-items"></ul>
+  </details>
+</main>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+ts	phase	decision	why	evidence	result
+2026-09-25T14:54:00Z	frame	把 pstack 原样放进 .claude/skills 和 .claude/agents（上游 commit 157aae3）	在 Claude Code 里打开本仓库就能直接用 /poteto-mode，文档里的链接也对得上同一个版本	.claude/skills/, .claude/skills/PSTACK-LICENSE	126 个文件, 1.2M
+2026-09-25T14:54:01Z	frame	按 figure-it-out 走，不走 Feature	这次既要做一个 app，又要留下能教学的过程记录，没有哪个现成 playbook 同时覆盖这两件事	.claude/skills/figure-it-out/SKILL.md	open
+2026-09-25T14:54:01Z	clarify	把原始需求拆成 8 个问题，按事实类还是偏好类分开	poteto-mode 的规定：能靠跑一下看到答案的问题不问人，用原型去定；只有偏好和产品方向才问人	docs/01-需求澄清.md	3 个用原型定，3 个按领域常识定，2 个留给你
+2026-09-25T14:56:48Z	clarify	布局选 C：顶部三张汇总卡 + 接下来 7 天日程	在 390x844 手机屏上实测首屏能看到几个答案：A 2/3（根本没有月总额这一项），B 1/3，C 3/3	prototype/measure.mjs, docs/images/prototype-{a,b,c}.png	C 3/3
+2026-09-25T14:56:48Z	clarify	改口：这不是一次性待办清单，而是周期事务 + 汇总	A 方案是经典 TODO 列表，它没法表达每月一共花多少钱，也没法表达每周都要买的水果，只能给每行贴个标签	docs/images/prototype-a.png	需求被重新定义
+2026-09-25T14:56:48Z	clarify	续费日期自己写函数算，按月末截断，并先写测试	实测 setMonth 把 1 月 31 日加一个月算成了 3 月 3 日，月末开通的订阅会被算错	prototype/date-fork.mjs 的输出	确认有坑
+2026-09-25T14:56:48Z	goal	完成条件写成 6 条能判真假的断言，全部由 scripts/verify.sh 跑	说成‘做好 TODO app’没法检查；每条断言要么通过要么失败，Claude 才能自己判断做完没有	docs/02-目标明确.md, scripts/verify.sh	open
+2026-09-25T14:58:50Z	route	数据形状先定：按 kind 区分的三种条目 + 每种一张行为表 + 纯函数 reducer	三类事务日期和金额规则不同，用一张 KINDS 表集中写，就不会在 UI 里到处写 if kind===...	app/domain.js 的 KINDS	open
+2026-09-25T14:58:50Z	route	下次扣费日和下次该买日都从开通日、上次购买日推算，不存可变的 nextDate	推算出来的值不会跑偏，也不用在每次扣费后回写；1/31 到 2/28 再到 3/31 这种月末情况也不会越推越早	app/domain.js nextRenewal	open
+2026-09-25T14:58:50Z	build	发现第一次的‘红’是假的：node --test test/ 在 Node 22 上直接报找不到模块 test，根本没跑到断言	prove-it-works 说验证出问题时先怀疑观察方法；把命令改成 test/*.test.js 后重跑，确认是因为 app/domain.js 不存在才红	package.json scripts.test	改好了命令，重新确认是真的红
+2026-09-25T14:58:50Z	build	实现 app/domain.js	让 10 条行为测试从红变绿	npm test	10 pass 0 fail
+2026-09-25T15:01:36Z	build	UI 按方案 C 做：三张汇总卡 + 7 天日程 + 三个折叠表单；输入校验只放在 app.js 的 PARSE 表里	domain.js 只收合法数据，脏字符串在表单这一层就被拒收	app/app.js, app/index.html	open
+2026-09-25T15:01:36Z	verify	真浏览器第一次打开就下载了文件而不是显示页面：extname('.html') 返回空字符串，首页被当成二进制发出去	只有真的在浏览器里跑才能发现，单元测试覆盖不到服务器	scripts/serve.mjs, test-e2e/run.mjs	改成按实际文件取扩展名后 7/7 通过
+2026-09-25T15:01:36Z	verify	故意往 todayISO 植入 UTC bug：端到端抓到了，单元测试 P6 却没抓到	单元测试用的是手写假对象，而今天的真实日期刚好就是 2026-09-25，等于期望值，所以是巧合通过	test/domain.test.js P6	单元测试被纠正
+2026-09-25T15:01:36Z	verify	P6 改用真实 Date + TZ=Asia/Shanghai + 远离今天的 2031-03-01，并把植入 bug 做成可重跑的 scripts/mutation-check.mjs	‘测试可能巧合通过’这个教训写成脚本比写成提醒可靠；它在临时副本里改代码，中途被打断也不会把 bug 留在 app/ 里	scripts/mutation-check.mjs	7 个植入 bug 全部被抓住
+2026-09-25T15:01:36Z	goal	scripts/verify.sh 串起三步：行为测试、变异检查、端到端，最后打印 VERIFIED	完成条件只有一个裁判，谁跑都是同一个结论	npm run verify	VERIFIED

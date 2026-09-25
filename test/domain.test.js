@@ -77,9 +77,8 @@ test('删除条目后它从日程和总额里消失', () => {
 });
 
 test('P6 北京时间早上 7 点，今天是本地日期而不是 UTC 的前一天', () => {
-  const at7amBeijing = new Date('2026-09-24T23:00:00Z');
-  const local = new Date(at7amBeijing.getTime() + 8 * 3600e3);
-  const fake = { getFullYear: () => local.getUTCFullYear(), getMonth: () => local.getUTCMonth(), getDate: () => local.getUTCDate() };
-  assert.equal(at7amBeijing.toISOString().slice(0, 10), '2026-09-24');
-  assert.equal(todayISO(fake), '2026-09-25');
+  process.env.TZ = 'Asia/Shanghai';
+  const at7amBeijing = new Date('2031-02-28T23:00:00Z');
+  assert.equal(at7amBeijing.toISOString().slice(0, 10), '2031-02-28');
+  assert.equal(todayISO(at7amBeijing), '2031-03-01');
 });

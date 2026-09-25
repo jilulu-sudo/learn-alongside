@@ -21,3 +21,8 @@ ts	phase	decision	why	evidence	result
 2026-09-25T15:02:55Z	correct	剪贴板不可用时退回到显示文字、全选，让人手动复制	手机用局域网 http 地址打开时不是安全上下文，navigator.clipboard 不存在；这个页面就是给家里手机用的，这种情况一定会遇到	test-e2e/run.mjs P7, docs/images/app-share-fallback.png	VERIFIED
 2026-09-25T15:10:05Z	verify	重读代码时发现：crypto.randomUUID 也只在安全上下文里有，手机用局域网 http 打开时每次添加都会失败	P7 的局域网测试只是在 localhost 上删掉了剪贴板，是个代理；改用本机真实网卡地址复现，页面报 crypto.randomUUID is not a function	test-e2e/run.mjs P7 局域网, isSecureContext=false	复现成功，之前 9 条端到端全绿却没发现
 2026-09-25T15:10:05Z	verify	加 newId() 在没有 randomUUID 时退回时间戳加随机数；局域网测试改走真实非安全地址，并断言错误提示为空	错误被表单的 try/catch 接住显示在页面上，不会变成 pageerror，只查 pageerror 抓不到	app/app.js newId	VERIFIED
+2026-09-25T15:10:15Z	docs	学习文档按你列的四种能力组织（01 到 04），外加设计地图（00）和提示词速查与练习（05）	你要学的是 pstack 的设计，App 只是载体；每种能力都落到 pstack 里具体的文件和这次真实的证据上	README.md, docs/	done
+2026-09-25T15:10:15Z	docs	文档里标明哪些纠正是真实发生的（1、2、3、5），哪些是演练（4）；偏离 pstack 的地方在 README 里单列	决策日志不能讲故事；把演练说成真实事件会误导你对 pstack 效果的判断	docs/04-路径纠正.md, README.md	done
+2026-09-25T15:10:15Z	docs	写 CLAUDE.md，让以后在本仓库里开 Claude Code 的会话知道约定和完成条件	你做 docs/05 的练习时，Claude 一开始就知道 domain.js 保持纯函数、完成以 npm run verify 为准	CLAUDE.md	done
+2026-09-25T15:10:48Z	review	提交前自己重读代码（没有 /deslop）：逾期水果的‘已过期’改成‘已到期’；读 localStorage 时只保留三种已知条目	‘已过期’读起来像水果坏了；存储是系统边界，一条坏数据不该让整页崩掉，用 Object.hasOwn 避免 toString 这种原型链上的名字混进来	app/app.js load, when	VERIFIED
+2026-09-25T15:10:48Z	verify	figure-it-out Phase E：对照 Phase A 的完成断言整体验证	P1 到 P7 全部由 npm run verify 判定，覆盖 11 条行为测试、8 个植入 bug、9 条真浏览器检查	npm run verify	VERIFIED

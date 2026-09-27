@@ -49,6 +49,7 @@ scripts/
   mutation-check.mjs  往代码里植入已知 bug，证明测试真的会失败
   serve.mjs      零依赖本地服务器
 prototype/       一次性原型和实验（做完决定就可以删）
+category-film/   独立子项目：范畴之画，一部在浏览器里放映的知识短片（Vite + React），见它自己的 README
 decisions.tsv    决策日志（show-me-your-work 格式），GitHub 会渲染成表格
 .claude/         pstack 本体（47 个技能 + 2 个子代理），来自上游 commit 157aae3，MIT 许可
 CLAUDE.md        给 Claude Code 的项目说明

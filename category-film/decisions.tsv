@@ -1,0 +1,9 @@
+ts	phase	decision	why	evidence	result
+2026-09-27T13:27:21Z	design	影片放在独立子目录 category-film/，自带 package.json 和 verify，不改根目录的 App 与 verify	用户要求独立子目录交付；两者无共享代码，分开后各自的完成条件互不干扰	category-film/package.json, 根 README 一行链接	done
+2026-09-27T13:27:21Z	design	Vite + React + SVG，画面是时间的纯函数 Stage(timeline, t)，场景导出 beats 与 View({clock})	用户建议 Vite React、保持 HTML 运行；观众熟悉单向数据流；纯函数让任意跳转、剪枝后重排和 Node 内逐拍渲染测试都成立	src/player/Stage.jsx, test/scenes.test.jsx	VERIFIED
+2026-09-27T13:27:21Z	design	不导出视频文件，不用 ffmpeg，交付物是可播放的网页	用户明确要求不用 ffmpeg 转视频；网页还能剪枝、暂停、跳转，视频文件做不到	README 几个取舍	done
+2026-09-27T13:27:21Z	design	知识地图 = 主干 5 岛 + 6 个旁枝（其中自然变换长在函子上），主干旁白提到旁枝时用 needs 声明，剪枝后自动跳过	要求可剪枝且不影响主干；把保证放进数据结构和测试，而不是靠人记得	src/core/graph.js, test/timeline.test.js 64 种剪法	117 passed
+2026-09-27T13:27:21Z	design	拍长由旁白字数推出（film.config.js 的 pace），动画只认拍内进度	改旁白或语速时不需要重排动画时间轴，字幕与动画不会错位	src/core/timeline.js beatDuration	done
+2026-09-27T13:27:21Z	design	屏幕上的每个数都来自 src/math 的纯函数并有测试（Δ=0、缺口√2、φ(12)=4、A→E=10、½+½−1=0 等）	避免讲解里出现手写的、可能错的数字；数学本身就是可验证的	test/math.test.js	117 passed
+2026-09-27T13:27:21Z	review	逐拍截图自查后修正：over 叠放顺序画反、地图压到字幕、公式上下标、标签重叠、剪枝面板连线标签堆叠	截图才能发现的问题，单元测试看不到	node e2e/smoke.mjs --shots 的 90 张截图	fixed
+2026-09-27T13:49:38Z	release	用 GitHub Actions 发布 dist 到 Pages：改动 category-film/ 的每次推送都跑 npm ci、测试和构建，只有默认分支才部署	用户希望 build 出 dist 发到 Pages；构建产物不进 git，由 CI 构建更可重现；默认分支判断用 github.event.repository.default_branch，不写死当前这个名字奇怪的默认分支	本地模拟 /learn-alongside/ 子路径加载 dist：资源全部 200、可播放、剪枝参数生效、无报错	done

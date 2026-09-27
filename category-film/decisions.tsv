@@ -6,3 +6,4 @@ ts	phase	decision	why	evidence	result
 2026-09-27T13:27:21Z	design	拍长由旁白字数推出（film.config.js 的 pace），动画只认拍内进度	改旁白或语速时不需要重排动画时间轴，字幕与动画不会错位	src/core/timeline.js beatDuration	done
 2026-09-27T13:27:21Z	design	屏幕上的每个数都来自 src/math 的纯函数并有测试（Δ=0、缺口√2、φ(12)=4、A→E=10、½+½−1=0 等）	避免讲解里出现手写的、可能错的数字；数学本身就是可验证的	test/math.test.js	117 passed
 2026-09-27T13:27:21Z	review	逐拍截图自查后修正：over 叠放顺序画反、地图压到字幕、公式上下标、标签重叠、剪枝面板连线标签堆叠	截图才能发现的问题，单元测试看不到	node e2e/smoke.mjs --shots 的 90 张截图	fixed
+2026-09-27T13:49:38Z	release	用 GitHub Actions 发布 dist 到 Pages：改动 category-film/ 的每次推送都跑 npm ci、测试和构建，只有默认分支才部署	用户希望 build 出 dist 发到 Pages；构建产物不进 git，由 CI 构建更可重现；默认分支判断用 github.event.repository.default_branch，不写死当前这个名字奇怪的默认分支	本地模拟 /learn-alongside/ 子路径加载 dist：资源全部 200、可播放、剪枝参数生效、无报错	done

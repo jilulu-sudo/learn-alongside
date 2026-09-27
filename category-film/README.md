@@ -27,6 +27,16 @@ npm run dev          # 打开终端里给出的地址，点“开始放映”
 
 进度条按幕着色，点哪里跳到哪里。控制台里也可以 `__film.seek(120)`。
 
+## 发布到 GitHub Pages
+
+构建产物 `dist/` 是纯静态文件，资源路径都是相对的（`vite.config.js` 里 `base: './'`），放在任何子路径下都能打开。
+
+仓库里的 [.github/workflows/category-film-pages.yml](../.github/workflows/category-film-pages.yml) 会在每次改动 `category-film/` 时运行 `npm ci`、`npm test`、`npm run build`。只有**默认分支**上的这次构建会发布到 Pages，其他分支只跑测试和构建，相当于 CI。
+
+第一次发布前，需要仓库管理员在 GitHub 上做一次设置：**Settings → Pages → Build and deployment → Source 选 “GitHub Actions”**。之后把改动合进默认分支，或在 Actions 页面对默认分支手动运行这个 workflow，片子就会出现在 `https://<用户名>.github.io/<仓库名>/`。
+
+注意：私有仓库需要 GitHub Pro / Team / Enterprise 才能开启 Pages，而且除 Enterprise 的访问控制外，发布出去的页面是**所有人都能打开**的。
+
 ## 片子讲什么
 
 一条主线贯穿全片：**我们一直在换“加法”是什么。** 叠画纸、沿偏序累加、取最小、异或，最后是箭头的组合本身。

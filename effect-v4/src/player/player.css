@@ -170,7 +170,7 @@ select:focus-visible {
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 400px;
+  grid-template-columns: minmax(0, 1fr) minmax(440px, 520px);
   gap: 28px;
   margin-top: 18px;
   align-items: start;
@@ -458,18 +458,22 @@ select {
 .code-box {
   margin: 0;
   max-height: 460px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   font-family: var(--mono);
   font-size: 12.5px;
   line-height: 1.7;
   background: var(--paper-2);
   border-radius: 6px;
   padding: 10px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .code-box div {
   padding-right: 12px;
-  white-space: pre;
+  white-space: inherit;
+  overflow-wrap: inherit;
   border-left: 3px solid transparent;
 }
 

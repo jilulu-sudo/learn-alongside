@@ -13,5 +13,6 @@ export const config = {
   stage: { width: 1600, height: 900, fade: 0.5 },
 
   speeds: [0.75, 1, 1.25, 1.5, 2],
+  narration: { path: '/api/narration', voice: '冰糖', cache: 6 },
   defaults: { speed: 1, captions: true, voice: false },
 };

@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { config } from '../config.js';
 import { keyOf } from '../core/reducer.js';
 import { toQuery } from '../core/url.js';
+import { isNarrationAbort, makeNarration } from './narration.js';
 
 export function useFrames(active, onFrame) {
   const cb = useRef(onFrame);
@@ -91,16 +92,71 @@ export function useUrlSync(state, chrome, first) {
   }, [query]);
 }
 
-// 浏览器自带的语音合成。每进入新的一拍就读这一拍的旁白；暂停或关掉就停。
+// MiMo 音频负责正常朗读；服务不可用时才退回浏览器语音，避免离线时整段失去反馈。
 export function useVoice({ voice, playing, speed }, beatKey, text) {
+  const narration = useRef(null);
+  const audio = useRef(null);
+  const generation = useRef(0);
+  if (!narration.current) narration.current = makeNarration(config.narration);
+
+  useEffect(() => {
+    return () => {
+      generation.current += 1;
+      audio.current?.pause();
+      if (audio.current) {
+        audio.current.removeAttribute('src');
+        audio.current.load();
+      }
+      window.speechSynthesis?.cancel();
+      narration.current.release();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (audio.current) audio.current.playbackRate = speed;
+  }, [speed]);
+
   useEffect(() => {
     const synth = window.speechSynthesis;
-    if (!synth) return;
-    synth.cancel();
-    if (!voice || !playing || !text) return;
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = config.lang;
-    u.rate = speed;
-    synth.speak(u);
-  }, [voice, playing, speed, beatKey, text]);
+    const player = audio.current ?? new Audio();
+    audio.current = player;
+    const token = ++generation.current;
+    const controller = new AbortController();
+
+    player.pause();
+    player.removeAttribute('src');
+    player.load();
+    synth?.cancel();
+    if (!voice || !playing || !text) return () => controller.abort();
+
+    const fallback = () => {
+      if (!synth || controller.signal.aborted || token !== generation.current) return;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = config.lang;
+      utterance.rate = speed;
+      synth.speak(utterance);
+    };
+
+    narration.current
+      .get(text, { signal: controller.signal })
+      .then(url => {
+        if (controller.signal.aborted || token !== generation.current) return;
+        player.src = url;
+        player.currentTime = 0;
+        player.playbackRate = speed;
+        return player.play();
+      })
+      .catch(error => {
+        if (isNarrationAbort(error) || controller.signal.aborted || token !== generation.current) return;
+        fallback();
+      });
+
+    return () => {
+      controller.abort();
+      player.pause();
+      player.removeAttribute('src');
+      player.load();
+      synth?.cancel();
+    };
+  }, [voice, playing, beatKey, text]);
 }

@@ -111,6 +111,11 @@ try {
     assert.ok(hot.some(l => l.includes('Effect.catchTag("NotFound"')), hot.join('\n'));
   });
 
+  await check('代码面板不需要横向滚动就能看全', async () => {
+    const dimensions = await page.locator('.code-box').evaluate(el => ({ scrollWidth: el.scrollWidth, clientWidth: el.clientWidth }));
+    assert.ok(dimensions.scrollWidth <= dimensions.clientWidth + 1, JSON.stringify(dimensions));
+  });
+
   await check('带参数打开链接，直接到那一章那一刻', async () => {
     const p = await browser.newPage({ viewport: { width: 1280, height: 800 } });
     watch(p);

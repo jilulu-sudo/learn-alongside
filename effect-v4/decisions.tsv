@@ -8,3 +8,4 @@ ts	phase	decision	why	evidence	result
 2026-10-01T03:38:02Z	design	拨旋钮后参数与记录成对提交，过时记录丢弃，再跳到回放拍播放	避免出现新参数配旧记录的一帧；乱序返回的旧记录不能覆盖新的	src/core/reducer.js ran, test/core.test.js	passed
 2026-10-01T03:38:02Z	review	逐拍截图自查后修正：残留珠子、标签拥挤、错误岔路缠绕、重试时间轴过空、v4 表格与布重叠、拍长被代码字母拉长	截图才能发现的问题，单元测试看不到；拍长改为汉字计 1、字母计 0.35	node e2e/smoke.mjs --shots 的 51 张截图	fixed
 2026-10-01T03:40:55Z	release	把构建产物发布为私有 claude.ai Artifact（页面去掉外壳，assets 原样附上），不改 GitHub Pages 工作流	用户要的是可以打开的 web app；Artifact 立刻能在手机上看；现有 Pages 工作流只发布 category-film，合并两者会改动别人的部署，留给用户决定	https://claude.ai/artifact/6dWuP3poAnQPvArPRS4CCu	done
+2026-10-01T10:53:35Z	narration	route MiMo through read-atlas	keep the API key server-side	read-atlas exposes POST /api/narration; ego-browser measured no code overflow at desktop and 390px	add bounded clip cache, Vite proxy, and wrapped snippets

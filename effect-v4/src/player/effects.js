@@ -36,7 +36,7 @@ export function useKeyboard(dispatch, stepTo) {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.target.closest?.('input, textarea, select')) return;
       if (e.key === ' ' && e.target.closest?.('button')) return;
-      if (e.key === 'f') return void (document.fullscreenElement ? document.exitFullscreen() : document.querySelector('.frame')?.requestFullscreen?.());
+      if (e.key === 'f') return void toggleFullscreen();
       const action = KEYS[e.key.length === 1 ? e.key.toLowerCase() : e.key];
       if (!action) return;
       e.preventDefault();
@@ -73,10 +73,21 @@ export function useLabRuns(state, chapters, labs, dispatch) {
   }, [state.chapter, state.knobs, state.runs, chapters, labs, dispatch]);
 }
 
+// 全屏在有些嵌入环境里不被允许：失败就算了，不报错。
+function toggleFullscreen() {
+  const request = document.fullscreenElement ? document.exitFullscreen?.() : document.querySelector('.frame')?.requestFullscreen?.();
+  request?.catch?.(() => {});
+}
+
+// 地址栏记住章节和时间。嵌在别的页面里时可能不允许改地址，那就不记。
 export function useUrlSync(state, chrome, first) {
   const query = toQuery(state, { chrome, first });
   useEffect(() => {
-    if (query !== window.location.search) history.replaceState(null, '', query || window.location.pathname);
+    try {
+      if (query !== window.location.search) history.replaceState(null, '', query || window.location.pathname);
+    } catch {
+      // 不能改地址栏时，播放不受影响。
+    }
   }, [query]);
 }
 

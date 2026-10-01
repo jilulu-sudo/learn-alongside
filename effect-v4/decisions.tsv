@@ -1,0 +1,10 @@
+ts	phase	decision	why	evidence	result
+2026-10-01T03:38:01Z	design	交互动画课放在独立子目录 effect-v4/，自带 package.json、CLAUDE.md 和 verify，不改根目录与 category-film	用户要求开子目录交付 web app、不要视频；与已有两个项目无共享代码，完成条件互不干扰	effect-v4/package.json, 根 README 一行链接	done
+2026-10-01T03:38:01Z	research	以 effect@4.0.0-rc.118 源码和 Effect-TS/website 仓库里的 v4 文档源文件为准	effect.website 被网络策略拦截（403），用户放开后本容器仍拦截；npm 与 GitHub 可达，同一份 mdx 源文件内容一致	website/apps/web/src/content/docs/v4/onboarding.mdx, npm pack effect@4.0.0-rc.118	done
+2026-10-01T03:38:02Z	design	一个意象贯穿全片：一根线；三种颜色只对应 Effect<A, E, R> 的三个参数，其余用墨与铅笔灰	用户要求简洁、朴素、克制的意象；三参数是 Effect 的核心，颜色与类型签名一一对应便于记忆	docs/意象词典.md, src/player/player.css	done
+2026-10-01T03:38:02Z	design	画面只回放真实运行的记录：实验在 TestClock 上每次拨 10ms 运行真的 Effect 程序，记录事件、Exit 和 span（自制 Tracer）	参考 Video Programming 的帧=时间纯函数，但教学内容必须真实；TestClock 让时间确定、可测；演示时长取 10ms 整数倍保证时刻精确	src/effect/record.js, test/labs.test.js 26 条	passed
+2026-10-01T03:38:02Z	design	屏幕上的代码放在 snippets/*.ts，用 tsc 对锁定版本类型检查，并由实验或测试执行	教 API 的课不能出现编不过的代码；类型标注本身就是教学内容（E 变窄、R 变 never）	npm run typecheck, test/scenes.test.jsx 类型一致性	passed
+2026-10-01T03:38:02Z	research	终幕代码用 effect/http 等路径，而不是文档里的 effect/unstable/*	rc.118（2026-09-28）是第一个移除 unstable 前缀的版本，rc.117 及以前、文档和 effect-smol 主分支仍是 unstable/；以能编译的为准并在课里说明	npm view effect@4.0.0-rc.117/118 exports; tsc 报错 TS2307 后改正	done
+2026-10-01T03:38:02Z	design	拨旋钮后参数与记录成对提交，过时记录丢弃，再跳到回放拍播放	避免出现新参数配旧记录的一帧；乱序返回的旧记录不能覆盖新的	src/core/reducer.js ran, test/core.test.js	passed
+2026-10-01T03:38:02Z	review	逐拍截图自查后修正：残留珠子、标签拥挤、错误岔路缠绕、重试时间轴过空、v4 表格与布重叠、拍长被代码字母拉长	截图才能发现的问题，单元测试看不到；拍长改为汉字计 1、字母计 0.35	node e2e/smoke.mjs --shots 的 51 张截图	fixed
+2026-10-01T03:40:55Z	release	把构建产物发布为私有 claude.ai Artifact（页面去掉外壳，assets 原样附上），不改 GitHub Pages 工作流	用户要的是可以打开的 web app；Artifact 立刻能在手机上看；现有 Pages 工作流只发布 category-film，合并两者会改动别人的部署，留给用户决定	https://claude.ai/artifact/6dWuP3poAnQPvArPRS4CCu	done
